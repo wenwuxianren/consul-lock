@@ -16,10 +16,21 @@ import java.util.List;
 public class DistributedLock{
     private ConsulClient consulClient;
 
+    /**
+     * 构造函数
+     * @param consulHost 注册consul的client或服务端的Ip或主机名，或域名
+     * @param consulPort 端口号
+     */
     public DistributedLock(String consulHost,int consulPort){
         consulClient = new ConsulClient(consulHost,consulPort);
     }
 
+    /**
+     * 获得锁的方法
+     * @param lockName 竞争的资源名
+     * @param ttlSeconds 锁的超时时间，超过该时间自动释放
+     * @return
+     */
     public LockContext getLock(String lockName,int ttlSeconds){
         LockContext lockContext = new LockContext();
         if(ttlSeconds<10 || ttlSeconds > 86400) ttlSeconds = 60;
@@ -38,6 +49,10 @@ public class DistributedLock{
         return lockContext;
     }
 
+    /**
+     * 释放锁
+     * @param sessionID
+     */
     public void releaseLock(String sessionID){
         consulClient.sessionDestroy(sessionID,null);
     }
@@ -73,9 +88,18 @@ public class DistributedLock{
         return isSuccess;
     }
 
+    /**
+     * 竞争锁时返回的对象
+     */
     @Data
     public class LockContext{
+        /**
+         * 获得锁成功返回该值，比便后面用该值来释放锁
+         */
         private String session;
+        /**
+         * 是否获得到锁
+         */
         private boolean isGetLock;
     }
 }
