@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: consul-lock
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        service-name: ${spring.application.name}
+        instance-id: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+        prefer-ip-address: true
+        health-check-interval: 10s
+        enabled: true
+        register: true
+
